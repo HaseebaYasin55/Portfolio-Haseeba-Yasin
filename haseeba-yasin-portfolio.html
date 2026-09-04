@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Haseeba Yasin — AI Engineer / LLM & Agent Systems</title>
+<meta name="description" content="Haseeba Yasin — AI Engineer building LLM apps, RAG pipelines, voice agents, multi-agent systems and MCP servers." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI ENGINEERING LAB — DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#0a0d12;
+  --bg-1:#0d1117;
+  --surface:#12181f;
+  --surface-2:#161d26;
+  --border:#232c37;
+  --border-soft:#1a222c;
+  --text:#eef3f7;
+  --text-dim:#93a1ae;
+  --text-dimmer:#5f6b78;
+  --accent:#ff8a5c;
+  --accent-soft:#ff8a5c22;
+  --accent-2:#7fe8c8;
+  --accent-2-soft:#7fe8c822;
+  --accent-3:#ffd166;
+  --accent-3-soft:#ffd16622;
+  --danger:#ff6b6b;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --sans:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --radius:14px;
+  --radius-sm:8px;
+  --maxw:1180px;
+  --dot-size:1px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 1px 1px, #ffffff0c 1px, transparent 0);
+  background-size:26px 26px;
+}
+::selection{ background:var(--accent); color:#0a0d12; }
+a{ color:inherit; text-decoration:none; }
+img{max-width:100%;display:block;}
+button{font-family:inherit;}
+h1,h2,h3,h4{ font-family:var(--sans); margin:0; letter-spacing:-0.02em; }
+p{margin:0;}
+.mono{ font-family:var(--mono); }
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+section{ position:relative; padding:120px 0; }
+@media(max-width:768px){ section{ padding:80px 0; } }
+
+/* scrollbar */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+/* ============ custom cursor (desktop only) ============ */
+#cursor-dot,#cursor-ring{
+  position:fixed; top:0; left:0; pointer-events:none; z-index:9999;
+  border-radius:50%; transform:translate(-50%,-50%);
+  transition:opacity .2s ease;
+}
+#cursor-dot{ width:6px;height:6px;background:var(--accent); }
+#cursor-ring{ width:32px;height:32px;border:1.5px solid var(--accent-2); transition:width .18s,height .18s,border-color .18s, transform .05s linear; }
+.cursor-grow #cursor-ring{ width:56px;height:56px; border-color:var(--accent); background:var(--accent-soft); }
+@media(hover:none),(pointer:coarse){ #cursor-dot,#cursor-ring{display:none;} }
+
+/* ============ scroll progress ============ */
+#progress{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent-3),var(--accent-2));
+  z-index:10000; transition:width .08s linear;
+}
+
+/* ============ NAV ============ */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  backdrop-filter:blur(10px);
+  background:#0a0d12cc;
+  border-bottom:1px solid var(--border-soft);
+}
+nav.wrap{
+  display:flex; align-items:center; justify-content:space-between;
+  height:66px;
+}
+.brand{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-weight:600; font-size:15px; }
+.brand .dot{ width:9px;height:9px;border-radius:50%; background:var(--accent-2); box-shadow:0 0 10px var(--accent-2); animation:blink 2.2s infinite; }
+@keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+.nav-links{ display:flex; gap:2px; align-items:center; }
+.nav-links a{
+  font-size:13.5px; padding:8px 14px; border-radius:8px; color:var(--text-dim);
+  font-family:var(--mono); transition:all .2s ease; position:relative;
+}
+.nav-links a:hover, .nav-links a.active{ color:var(--text); background:var(--surface-2); }
+.nav-links a.active::before{ content:'▸'; color:var(--accent); margin-right:4px; }
+.nav-cta{ display:flex; gap:10px; align-items:center; }
+.icon-btn{
+  width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border); color:var(--text-dim); transition:all .2s ease;
+}
+.icon-btn:hover{ color:var(--bg); background:var(--accent-2); border-color:var(--accent-2); transform:translateY(-2px) rotate(-4deg); }
+.burger{ display:none; width:38px;height:38px; border-radius:9px; border:1px solid var(--border); align-items:center; justify-content:center; color:var(--text); background:transparent; cursor:pointer; transition:all .2s ease; }
+.burger:hover{ border-color:var(--accent-2); color:var(--accent-2); }
+@media(max-width:900px){
+  .nav-links{ display:none; }
+  .burger{ display:flex; }
+}
+#mobileMenu{
+  position:fixed; inset:66px 0 0 0; background:var(--bg); z-index:850; padding:20px 24px;
+  transform:translateX(100%); transition:transform .35s cubic-bezier(.7,0,.2,1); overflow-y:auto;
+}
+#mobileMenu.open{ transform:translateX(0); }
+#mobileMenu a{ display:block; padding:16px 4px; font-family:var(--mono); font-size:18px; border-bottom:1px solid var(--border-soft); color:var(--text-dim); }
+#mobileMenu a:hover{ color:var(--accent); }
+
+/* ============ HERO ============ */
+#hero{ min-height:100svh; display:flex; align-items:center; padding-top:100px; position:relative; overflow:hidden; }
+#hero-canvas{ position:absolute; inset:0; z-index:0; opacity:.55; }
+.hero-inner{ position:relative; z-index:2; display:grid; grid-template-columns:1.15fr .85fr; gap:50px; align-items:center; }
+@media(max-width:940px){ .hero-inner{ grid-template-columns:1fr; } }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12.5px;
+  color:var(--accent-2); background:var(--accent-2-soft); border:1px solid #7fe8c840; padding:6px 12px;
+  border-radius:100px; margin-bottom:22px;
+}
+.eyebrow .pulse{ width:7px;height:7px;border-radius:50%; background:var(--accent-2); animation:pulse 1.6s infinite; }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 #7fe8c866;} 70%{box-shadow:0 0 0 8px #7fe8c800;} 100%{box-shadow:0 0 0 0 #7fe8c800;} }
+h1.hero-title{ font-size:clamp(34px,5.4vw,64px); line-height:1.05; font-weight:700; }
+h1.hero-title .grad{ background:linear-gradient(100deg,var(--accent),var(--accent-3) 60%,var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero-sub{ margin-top:22px; font-size:17px; color:var(--text-dim); max-width:560px; }
+.hero-sub b{color:var(--text); font-weight:600;}
+.hero-cta{ display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; }
+.btn{
+  font-family:var(--mono); font-size:14px; font-weight:500; padding:13px 22px; border-radius:10px;
+  display:inline-flex; align-items:center; gap:9px; cursor:pointer; border:1px solid transparent;
+  transition:transform .18s cubic-bezier(.5,1.6,.4,1), box-shadow .2s ease, background .2s ease;
+}
+.btn:active{ transform:scale(.96); }
+.btn-primary{ background:var(--accent); color:#160a05; box-shadow:0 6px 0 #b85a35, 0 10px 24px -6px #ff8a5c55; }
+.btn-primary:hover{ transform:translateY(-3px) rotate(-1deg); box-shadow:0 8px 0 #b85a35, 0 16px 28px -6px #ff8a5c66; }
+.btn-ghost{ background:var(--surface); border-color:var(--border); color:var(--text); }
+.btn-ghost:hover{ border-color:var(--accent-2); color:var(--accent-2); transform:translateY(-3px); }
+.btn-outline{ background:transparent; border:1px dashed var(--border); color:var(--text-dimmer); }
+.btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+.hero-terminal{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:0 30px 60px -20px #000000aa; overflow:hidden;
+}
+.term-bar{ display:flex; align-items:center; gap:8px; padding:11px 14px; background:var(--surface-2); border-bottom:1px solid var(--border); }
+.term-dot{ width:10px;height:10px;border-radius:50%; }
+.term-bar .term-title{ margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--text-dimmer); }
+.term-body{ padding:20px 20px 24px; font-family:var(--mono); font-size:13.5px; color:var(--text-dim); min-height:230px; }
+.term-body .line{ margin-bottom:10px; }
+.term-body .prompt{ color:var(--accent-2); }
+.term-body .out{ color:var(--text); }
+.term-body .key{ color:var(--accent-3); }
+#typedOut{ white-space:pre-wrap; }
+.caret{ display:inline-block; width:8px; background:var(--accent); animation:caret 1s steps(1) infinite; }
+@keyframes caret{ 50%{ opacity:0; } }
+
+.scroll-hint{ position:absolute; bottom:26px; left:50%; transform:translateX(-50%); font-family:var(--mono); font-size:11px; color:var(--text-dimmer); display:flex; flex-direction:column; align-items:center; gap:6px; z-index:2; }
+.scroll-hint .bar{ width:1px;height:26px;background:linear-gradient(var(--text-dimmer),transparent); animation:scrolldown 1.6s infinite; }
+@keyframes scrolldown{ 0%{ transform:scaleY(0); transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 51%{transform-origin:bottom;} 100%{transform:scaleY(0);transform-origin:bottom;} }
+
+/* ============ SECTION HEADERS ============ */
+.sec-head{ margin-bottom:52px; }
+.sec-tag{ font-family:var(--mono); font-size:12.5px; color:var(--accent); display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.sec-tag::before{ content:'//'; color:var(--text-dimmer); }
+.sec-title{ font-size:clamp(26px,3.6vw,40px); font-weight:700; }
+.sec-desc{ color:var(--text-dim); max-width:640px; margin-top:12px; font-size:15.5px; }
+
+.reveal{ opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1); }
+.reveal.in{ opacity:1; transform:translateY(0); }
+
+/* ============ ABOUT ============ */
+#about .grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; }
+@media(max-width:860px){ #about .grid{ grid-template-columns:1fr; gap:36px; } }
+.about-text p{ color:var(--text-dim); margin-bottom:16px; font-size:15.5px; }
+.about-text b{ color:var(--text); font-weight:600; }
+.about-text .highlight{ color:var(--accent-2); font-weight:600; }
+.journey{ border-left:2px solid var(--border); padding-left:22px; margin-top:30px; }
+.journey .step{ position:relative; padding-bottom:26px; }
+.journey .step::before{ content:''; position:absolute; left:-27px; top:3px; width:11px;height:11px;border-radius:50%; background:var(--bg); border:2px solid var(--accent-2); }
+.journey .step:last-child{ padding-bottom:0; }
+.journey .step .t{ font-family:var(--mono); font-size:12px; color:var(--accent-2); margin-bottom:4px; }
+.journey .step .d{ font-size:14.5px; color:var(--text-dim); }
+.journey .step .d b{ color:var(--text); }
+
+.about-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:26px; }
+.about-card .kv{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-soft); font-family:var(--mono); font-size:13px; }
+.about-card .kv:last-child{ border-bottom:none; }
+.about-card .kv span:first-child{ color:var(--text-dimmer); }
+.about-card .kv span:last-child{ color:var(--text); text-align:right; }
+
+/* ============ FEATURED PROJECTS ============ */
+.feat-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:0; overflow:hidden; margin-bottom:22px; transition:border-color .25s ease, transform .25s ease;
+}
+.feat-card:hover{ border-color:var(--accent-soft); }
+.feat-head{ display:flex; align-items:center; justify-content:space-between; padding:22px 26px; cursor:pointer; gap:16px; flex-wrap:wrap; }
+.feat-head-left{ display:flex; align-items:center; gap:16px; }
+.feat-num{ font-family:var(--mono); color:var(--text-dimmer); font-size:13px; }
+.feat-title{ font-size:19px; font-weight:700; }
+.feat-tagline{ color:var(--text-dim); font-size:13.5px; margin-top:4px; }
+.feat-cat-badge{ font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:100px; border:1px solid var(--border); color:var(--text-dim); white-space:nowrap; }
+.feat-toggle{ width:30px;height:30px;border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-dim); transition:transform .3s ease; flex-shrink:0; }
+.feat-card.open .feat-toggle{ transform:rotate(45deg); background:var(--accent); color:#160a05; border-color:var(--accent); }
+.feat-body{ max-height:0; overflow:hidden; transition:max-height .45s cubic-bezier(.2,.7,.3,1); border-top:1px solid transparent; }
+.feat-card.open .feat-body{ border-top:1px solid var(--border); }
+.feat-body-inner{ padding:24px 26px 28px; display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+@media(max-width:760px){ .feat-body-inner{ grid-template-columns:1fr; } }
+.psa .block{ margin-bottom:18px; }
+.psa .label{ font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent-2); margin-bottom:6px; }
+.psa .label.problem{ color:var(--danger); }
+.psa .label.solution{ color:var(--accent-3); }
+.psa p{ font-size:14px; color:var(--text-dim); line-height:1.65; }
+.arch-box{ background:#080a0d; border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px; font-family:var(--mono); font-size:12px; color:var(--accent-2); overflow-x:auto; white-space:pre; line-height:1.7; }
+.tech-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.tag{ font-family:var(--mono); font-size:11.5px; padding:5px 10px; border-radius:7px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); transition:all .18s ease; }
+.tag:hover{ color:var(--bg); background:var(--accent-2); border-color:var(--accent-2); transform:translateY(-2px) rotate(-2deg); }
+.feat-list{ list-style:none; margin:0; padding:0; }
+.feat-list li{ font-size:13.5px; color:var(--text-dim); padding:6px 0 6px 20px; position:relative; }
+.feat-list li::before{ content:'✓'; position:absolute; left:0; color:var(--accent-2); font-family:var(--mono); }
+.feat-links{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+.feat-links a{ font-family:var(--mono); font-size:12.5px; padding:9px 14px; border-radius:8px; border:1px solid var(--border); display:inline-flex; gap:7px; align-items:center; color:var(--text); }
+.feat-links a:hover{ border-color:var(--accent); color:var(--accent); }
+
+.proj-private-badge{ font-family:var(--mono); font-size:10px; color:var(--accent-3); border:1px dashed var(--accent-3); padding:3px 8px; border-radius:100px; display:inline-block; vertical-align:middle; }
+
+/* ============ SKILLS ============ */
+.skills-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+@media(max-width:760px){ .skills-grid{ grid-template-columns:1fr; } }
+.skill-cat{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
+.skill-cat h4{ font-size:14.5px; font-family:var(--mono); color:var(--accent); margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.skill-tags{ display:flex; flex-wrap:wrap; gap:8px; }
+.skill-tag{ font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); cursor:pointer; transition:all .18s ease; position:relative; }
+.skill-tag:hover{ color:var(--bg); background:var(--accent-3); border-color:var(--accent-3); transform:translateY(-2px); }
+#skillInfo{ margin-top:26px; background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:18px 22px; font-family:var(--mono); font-size:13px; color:var(--text-dim); min-height:56px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+#skillInfo b{color:var(--accent-2);}
+#skillInfo .proj-pill{ background:var(--surface-2); border:1px solid var(--border); padding:3px 9px; border-radius:100px; font-size:11.5px; color:var(--text); }
+
+/* ============ TIMELINE (experience/education) ============ */
+.tl{ position:relative; padding-left:34px; }
+.tl::before{ content:''; position:absolute; left:9px; top:6px; bottom:6px; width:2px; background:linear-gradient(var(--accent),var(--accent-2)); }
+.tl-item{ position:relative; margin-bottom:34px; }
+.tl-item::before{ content:''; position:absolute; left:-34px; top:4px; width:20px;height:20px;border-radius:50%; background:var(--bg); border:2px solid var(--accent-2); display:flex; }
+.tl-item::after{ content:'▹'; position:absolute; left:-30px; top:1px; color:var(--accent-2); font-size:12px; }
+.tl-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:18px 20px; transition:border-color .25s ease, transform .25s ease; }
+.tl-date{ font-family:var(--mono); font-size:11.5px; color:var(--accent-3); margin-bottom:6px; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+.tl-role{ font-size:16px; font-weight:700; }
+.tl-org{ font-size:13.5px; color:var(--accent-2); margin-top:2px; }
+.tl-desc{ font-size:13.5px; color:var(--text-dim); margin-top:8px; }
+.editme{ border:1px dashed var(--accent-3); background:#ffd16612; }
+.editme .tl-desc{ color:var(--accent-3); }
+
+/* -- experience: interactive expandable entries -- */
+.tl-item.current .tl-card{ border-color:#7fe8c855; box-shadow:0 0 0 1px var(--accent-2-soft), 0 14px 30px -18px #000a; }
+.tl-live{ display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; color:var(--accent-2); background:var(--accent-2-soft); border:1px solid #7fe8c840; padding:3px 9px; border-radius:100px; text-transform:uppercase; letter-spacing:.04em; }
+.tl-live .pulse{ width:6px;height:6px;border-radius:50%; background:var(--accent-2); animation:pulse 1.6s infinite; }
+.tl-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; cursor:pointer; }
+.tl-loc{ font-family:var(--mono); font-size:11.5px; color:var(--text-dimmer); margin-top:6px; display:flex; align-items:center; gap:6px; }
+.tl-loc::before{ content:'📍'; font-size:10px; opacity:.8; }
+.tl-toggle{ width:28px;height:28px;border-radius:8px; border:1px solid var(--border); display:flex;align-items:center;justify-content:center; color:var(--text-dim); flex-shrink:0; transition:transform .3s ease, background .2s ease, color .2s ease, border-color .2s ease; font-size:15px; margin-top:2px; }
+.tl-item.open .tl-toggle{ transform:rotate(45deg); background:var(--accent); color:#160a05; border-color:var(--accent); }
+.tl-body{ max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.2,.7,.3,1); }
+.tl-item.open .tl-body{ margin-top:14px; }
+.tl-body-inner{ border-top:1px solid var(--border-soft); padding-top:14px; }
+.tl-body .feat-list{ margin-bottom:4px; }
+.tl-body .tech-row{ margin-top:10px; }
+
+/* -- education: distinct card treatment, consistent language -- */
+.edu-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+@media(max-width:760px){ .edu-grid{ grid-template-columns:1fr; } }
+.edu-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px 26px; transition:transform .25s cubic-bezier(.3,.6,.3,1), border-color .25s ease, box-shadow .25s ease; }
+.edu-card:hover{ transform:translateY(-5px) rotate(-.3deg); border-color:var(--accent-3); box-shadow:0 18px 32px -16px #00000090; }
+.edu-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.edu-icon{ width:38px;height:38px;border-radius:10px; background:var(--accent-3-soft); border:1px solid #ffd16640; display:flex;align-items:center;justify-content:center; color:var(--accent-3); flex-shrink:0; }
+.edu-date{ font-family:var(--mono); font-size:11.5px; color:var(--text-dimmer); text-align:right; }
+.edu-degree{ font-size:16.5px; font-weight:700; }
+.edu-org{ font-size:13.5px; color:var(--accent-2); margin-top:4px; }
+.edu-note{ font-size:13px; color:var(--text-dim); margin-top:12px; line-height:1.6; }
+
+/* ============ CONTACT ============ */
+#contact .box{ background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:56px; text-align:center; position:relative; overflow:hidden;}
+#contact .box::before{ content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, var(--accent-soft), transparent 55%), radial-gradient(circle at 80% 80%, var(--accent-2-soft), transparent 55%); pointer-events:none;}
+#contact h2{ font-size:clamp(26px,4vw,42px); position:relative; }
+#contact p{ color:var(--text-dim); max-width:520px; margin:16px auto 30px; position:relative; }
+.contact-links{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; }
+
+footer{ padding:34px 0; border-top:1px solid var(--border-soft); text-align:center; }
+footer p{ font-family:var(--mono); font-size:12px; color:var(--text-dimmer); }
+footer .heart{ color:var(--accent); }
+
+/* ============ MINI TERMINAL WIDGET (easter egg) ============ */
+#miniTermBtn{
+  position:fixed; bottom:22px; right:22px; z-index:1500; width:52px;height:52px;border-radius:50%;
+  background:var(--accent); color:#160a05; display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px -4px #ff8a5c88; cursor:pointer; font-family:var(--mono); font-weight:700; font-size:18px;
+  border:none; transition:transform .2s cubic-bezier(.5,1.6,.4,1);
+}
+#miniTermBtn:hover{ transform:scale(1.1) rotate(-8deg); }
+#miniTerm{
+  position:fixed; bottom:86px; right:22px; z-index:1500; width:320px; max-width:88vw; height:360px;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden;
+  box-shadow:0 30px 60px -18px #000; display:none; flex-direction:column;
+  transform-origin:bottom right; animation:termPop .25s cubic-bezier(.3,.9,.4,1);
+}
+#miniTerm.open{ display:flex; }
+@keyframes termPop{ from{ opacity:0; transform:scale(.85) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
+.mt-body{ flex:1; padding:14px; font-family:var(--mono); font-size:12.5px; overflow-y:auto; color:var(--text-dim); }
+.mt-body .line{ margin-bottom:8px; }
+.mt-body .cmd{ color:var(--accent-2); }
+.mt-body .resp{ color:var(--text); white-space:pre-wrap; }
+.mt-input-row{ display:flex; align-items:center; gap:6px; padding:10px 12px; border-top:1px solid var(--border); }
+.mt-input-row span{ color:var(--accent); font-family:var(--mono); font-size:13px; }
+.mt-input-row input{ flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:var(--mono); font-size:13px; }
+
+/* utility */
+.center{text-align:center;}
+.grad-text{ background:linear-gradient(100deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ============ NAV ============ -->
+<header>
+  <nav class="wrap">
+    <a href="#hero" class="brand"><span class="dot"></span> haseeba<span style="color:var(--text-dimmer)">.dev</span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">about</a>
+      <a href="#featured">work</a>
+      <a href="#skills">skills</a>
+      <a href="#experience">journey</a>
+      <a href="#contact">contact</a>
+    </div>
+    <div class="nav-cta">
+      <a class="icon-btn" href="https://github.com/HaseebaYasin55" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.4-1.27.73-1.56-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.48.11-3.09 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.61.24 2.8.12 3.09.74.8 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.07.78 2.15v3.19c0 .3.2.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+      </a>
+      <a class="icon-btn" href="https://www.linkedin.com/in/haseeba-yasin-975251230" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.58c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.68H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+      </a>
+      <button class="burger" id="burgerBtn" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+<div id="mobileMenu">
+  <a href="#about">01 · about</a>
+  <a href="#featured">02 · work</a>
+  <a href="#skills">03 · skills</a>
+  <a href="#experience">04 · journey</a>
+  <a href="#education">05 · education</a>
+  <a href="#contact">06 · contact</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="wrap hero-inner">
+    <div class="reveal in">
+      <div class="eyebrow"><span class="pulse"></span> open to AI Engineering roles</div>
+      <h1 class="hero-title">I build systems that <span class="grad">reason</span>, <span class="grad">remember</span> &amp; <span class="grad">talk back</span>.</h1>
+      <p class="hero-sub">I'm <b>Haseeba Yasin</b>, an AI Engineer who ships applied LLM systems end-to-end — <b>RAG pipelines</b>, <b>voice-first agents</b>, <b>multi-agent pipelines</b>, and <b>MCP servers</b> — not just prompts in a notebook.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/HaseebaYasin55" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.4-1.27.73-1.56-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.48.11-3.09 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.61.24 2.8.12 3.09.74.8 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.07.78 2.15v3.19c0 .3.2.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+          View GitHub
+        </a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/haseeba-yasin-975251230" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.58c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.68H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+          Connect on LinkedIn
+        </a>
+        <button class="btn btn-outline" id="resumeBtn" title="Add your resume link in DATA.profile.resumeUrl">
+          ⬇ Resume
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-terminal reveal in" style="transition-delay:.15s">
+      <div class="term-bar">
+        <div class="term-dot" style="background:#ff8a5c"></div>
+        <div class="term-dot" style="background:#ffd166"></div>
+        <div class="term-dot" style="background:#7fe8c8"></div>
+        <span class="term-title">haseeba@ai-lab: ~</span>
+      </div>
+      <div class="term-body">
+        <div class="line"><span class="prompt">❯</span> <span class="key">whoami</span></div>
+        <div class="line out" id="typedOut"></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>scroll</span><span class="bar"></span></div>
+</section>
+
+<!-- ============ ABOUT / JOURNEY ============ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">01 · about</div>
+      <h2 class="sec-title">From chatbot personas to production agents</h2>
+      <p class="sec-desc">A quick, honest look at how I actually got here — traced through the real projects I shipped, in the order I shipped them.</p>
+    </div>
+    <div class="grid">
+      <div class="about-text reveal">
+        <p>I got into applied AI the way most engineers do — by building something small and slightly ridiculous. <b>Personality Bot</b> was a Streamlit chatbot that could switch between a Doctor, a Chef, and a Maths Teacher persona while letting me A/B test different LLMs live. It taught me the fundamentals of <span class="highlight">prompt layering</span> and <span class="highlight">model behavior</span> — and it's where this portfolio's timeline starts.</p>
+        <p>From there, the projects got progressively more "production-shaped": grounding answers in real documents with <b>Adaptive RAG</b> (and actually measuring retrieval latency and hallucination, not just demoing it), giving agents <b>persistent memory</b> with Mem0, and giving them a <b>voice</b> — first with Groq Whisper + Deepgram, then with a full Vapi-powered voice-RAG stack backed by Supabase.</p>
+        <p>Along the way I built <b>multi-tool agents</b> that search, transcribe and summarize video on their own, a <b>CrewAI</b> pipeline of three cooperating agents that researches news and reports to Slack, and — most recently — an <b>MCP server</b> that lets Claude Desktop manage a real to-do list through typed tools instead of a chat hack.</p>
+        <p>I care about the parts most demos skip: <span class="highlight">grounding</span>, <span class="highlight">tool-calling reliability</span>, <span class="highlight">evaluation</span>, and <span class="highlight">architecture that doesn't fall over</span> once it leaves the notebook.</p>
+
+        <div class="journey">
+          <div class="step"><div class="t">START</div><div class="d"><b>Personality Bot</b> — multi-persona LLM chatbot, prompt engineering fundamentals</div></div>
+          <div class="step"><div class="t">THEN</div><div class="d"><b>Adaptive RAG · Memoria</b> — grounded retrieval, benchmarking, persistent memory</div></div>
+          <div class="step"><div class="t">THEN</div><div class="d"><b>Voice Bot · Vapi RAG Assistant</b> — voice-first agents with tool-calling</div></div>
+          <div class="step"><div class="t">THEN</div><div class="d"><b>Transcription Bot · AI News Research Agent</b> — multi-tool and multi-agent (CrewAI) systems</div></div>
+          <div class="step"><div class="t">NOW</div><div class="d"><b>ToDo List MCP Server</b> — exposing tools to AI clients via the Model Context Protocol</div></div>
+        </div>
+      </div>
+
+      <div class="about-card reveal" style="transition-delay:.1s">
+        <div class="kv"><span>role</span><span>AI Engineer</span></div>
+        <div class="kv"><span>focus</span><span>LLM Apps · RAG · Agents · MCP</span></div>
+        <div class="kv"><span>core stack</span><span>Python · Groq · LangChain</span></div>
+        <div class="kv"><span>interfaces</span><span>Streamlit · Chainlit · FastAPI</span></div>
+        <div class="kv"><span>github</span><span>@HaseebaYasin55</span></div>
+        <div class="kv"><span>status</span><span style="color:var(--accent-2)">available for hire</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED PROJECTS ============ -->
+<section id="featured">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">02 · deep dives</div>
+      <h2 class="sec-title">Featured builds</h2>
+      <p class="sec-desc">Every AI project I've shipped, in one place. Click any project to expand the full breakdown — problem, solution, architecture, tech and features.</p>
+    </div>
+    <div id="featuredList"></div>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">03 · toolbox</div>
+      <h2 class="sec-title">Skills, straight from the code</h2>
+      <p class="sec-desc">Every skill below is drawn directly from a shipped project — click a tag to see exactly which one.</p>
+    </div>
+    <div class="skills-grid reveal" id="skillsGrid"></div>
+    <div id="skillInfo">👆 click any skill tag above to see which project(s) it's from</div>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">04 · journey</div>
+      <h2 class="sec-title">Experience</h2>
+      <p class="sec-desc">Roles, internships and fellowships that shaped how I build. Click any entry to expand what I actually did.</p>
+    </div>
+    <div class="tl reveal" id="expTl"></div>
+  </div>
+</section>
+
+<!-- ============ EDUCATION ============ -->
+<section id="education">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">05 · education</div>
+      <h2 class="sec-title">Education</h2>
+      <p class="sec-desc">The formal foundation underneath all the shipped projects above.</p>
+    </div>
+    <div class="edu-grid reveal" id="eduTl"></div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="box reveal">
+      <h2>Let's build something that actually ships.</h2>
+      <p>I'm currently looking for AI Engineering / AI Application / LLM &amp; Agent Systems roles. If you're hiring — or just want to talk architecture — reach out.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="https://github.com/HaseebaYasin55" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/haseeba-yasin-975251230" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="btn btn-outline" href="#" id="emailBtn">✉ Email (add yours)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>designed &amp; built by Haseeba Yasin · crafted with <span class="heart">♥</span> and a few too many <span class="mono">while(true)</span> loops</p>
+</footer>
+
+<!-- ============ MINI TERMINAL EASTER EGG ============ -->
+<button id="miniTermBtn" title="Open lab terminal">▍</button>
+<div id="miniTerm">
+  <div class="term-bar">
+    <div class="term-dot" style="background:#ff8a5c"></div>
+    <div class="term-dot" style="background:#ffd166"></div>
+    <div class="term-dot" style="background:#7fe8c8"></div>
+    <span class="term-title">lab-terminal</span>
+  </div>
+  <div class="mt-body" id="mtBody">
+    <div class="line resp">Hi! I'm a tiny terminal easter egg 🧪
+Type <span class="cmd">help</span> to see what I can do.</div>
+  </div>
+  <div class="mt-input-row">
+    <span>❯</span>
+    <input id="mtInput" type="text" placeholder="type a command…" autocomplete="off" />
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — EDIT EVERYTHING HERE. This is the only place you
+   should need to touch to update content on this site.
+   Sourced from: github.com/HaseebaYasin55 (verified, live-fetched)
+   ============================================================ */
+const DATA = {
+  profile:{
+    name:"Haseeba Yasin",
+    github:"https://github.com/HaseebaYasin55",
+    linkedin:"https://www.linkedin.com/in/haseeba-yasin-975251230",
+    resumeUrl:"",   // TODO: add a link to your resume PDF
+    email:""        // TODO: add your contact email
+  },
+
+  categories:[
+    {key:"all", label:"All"},
+    {key:"llm", label:"LLM / Conversational AI"},
+    {key:"rag", label:"RAG & Knowledge Systems"},
+    {key:"voice", label:"Voice AI"},
+    {key:"agents", label:"AI Agents / Multi-Agent"},
+    {key:"mcp", label:"MCP & Automation"},
+    {key:"fullstack", label:"Full-Stack / Other"},
+    {key:"private", label:"Private"}
+  ],
+
+  projects:[
+    {
+      id:"personality-bot", name:"Personality Bot", cat:"llm",
+      tagline:"Multi-persona AI chatbot with live LLM switching",
+      problem:"Most simple chatbots lock you into one tone, and there's rarely an easy way to compare how different LLMs handle the exact same persona side by side.",
+      solution:"A Streamlit chatbot that layers a strict base system prompt with five swappable persona prompts (Maths Teacher, Doctor, Travel Guide, Chef, Tech Support), while letting the user swap the underlying Groq-hosted model — GPT-OSS-120B, Llama 3.3 70B or Qwen 3.6 27B — without ever breaking character.",
+      arch:"User picks persona\n     │\nUser picks model (Groq)\n     │\nBase Prompt + Persona Prompt\n     │\nGroq streams response ──► UI\n     │\nSession memory stores turn",
+      tech:["Python","Streamlit","Groq API","python-dotenv"],
+      features:["Two-layer prompt system: base rules + persona","Live model switching mid-conversation","Real-time streamed responses","Session memory across turns","Persona guardrails — refuses out-of-domain questions"],
+      github:"https://github.com/HaseebaYasin55/Personality-Bot",
+      demo:"https://personality-bot-1.streamlit.app/",
+      featured:true
+    },
+    {
+      id:"adaptive-rag", name:"Adaptive RAG", cat:"rag",
+      tagline:"RAG assistant with a live knowledge base and per-query benchmarking",
+      problem:"Most RAG demos are static — there's no visibility into whether retrieval quality degrades as the knowledge base grows, or whether the model is actually grounded in retrieved text versus quietly hallucinating.",
+      solution:"A Streamlit RAG assistant where the knowledge base is fully live — upload or delete PDFs/TXT/DOCX at any time and the ChromaDB index updates immediately — with every query benchmarked for retrieval time, generation time, similarity score, and a lexical-overlap faithfulness score used as a fast hallucination proxy.",
+      arch:"Upload → chunk (document_loader)\n  → embed (HF sentence-transformers)\n  → ChromaDB index\n\nQuery → retriever.retrieve() top-k\n  → llm_generator (Groq, grounded)\n  → performance_monitor logs\n     latency + faithfulness\n  → SQLite history + dashboard",
+      tech:["Python","Streamlit","LangChain","Groq (Llama 3.3 70B)","HuggingFace Embeddings","ChromaDB","SQLite"],
+      features:["Live add/delete knowledge base with instant re-indexing","Context-only grounded answers","Per-query latency + faithfulness benchmarking","Knowledge-base-growth performance dashboard","Full browsable query history"],
+      github:"https://github.com/HaseebaYasin55/Adaptive-RAG",
+      demo:"https://adaptive-rag-11.streamlit.app/",
+      featured:true
+    },
+    {
+      id:"memoria", name:"Memoria", cat:"rag",
+      tagline:"Persistent-memory chatbot that remembers you across sessions",
+      problem:"Chatbots forget everything the moment a session ends, forcing users to repeat the same context over and over.",
+      solution:"A Streamlit chatbot with a persistent long-term memory layer via Mem0 — it decides on its own what's worth remembering from a raw message, updates facts instead of duplicating them (\"I am 26 now\" overwrites \"I am 25\"), and recalls only what's relevant to the current question.",
+      arch:"Message → MemoryEngine.recall()\n  semantic search (Mem0 + Chroma)\n     │\nChatEngine.reply() — Groq LLM\n  + recalled facts + history\n     │\nResponse shown to user\n     │\nMemoryEngine.remember()\n  extracts + merges new facts",
+      tech:["Python","Streamlit","Groq","Mem0","ChromaDB","sentence-transformers"],
+      features:["Fact-level automatic memory extraction","Automatic fact updates, no duplicate/contradicting facts","Semantic recall scoped to the current message","Per-user memory isolation","\"Memory used for this reply\" transparency panel","Fully local by default, disk-persisted"],
+      github:"https://github.com/HaseebaYasin55/Memoria",
+      demo:"https://memoria-11.streamlit.app/",
+      featured:false
+    },
+    {
+      id:"voice-bot", name:"Voice Bot", cat:"voice",
+      tagline:"Voice-in / voice-out conversational agent with tool-calling",
+      problem:"Typing isn't always the most natural way to talk to an agent, and most voice demos are just TTS bolted onto a chatbot with no real reasoning or tool use in between.",
+      solution:"A full voice-in / voice-out agent — Groq Whisper transcribes speech, a Llama 3.3 70B agent reasons and decides whether it needs a tool (current time, live weather via Open-Meteo), and Deepgram Aura-2 speaks the final answer back naturally.",
+      arch:"Mic → Groq Whisper (STT)\n  → history + tool defs\n  → Llama 3.3 70B (tool-calling loop)\n  → tool result fed back (if used)\n  → final reply\n  → Deepgram Aura-2 (TTS)\n  → auto-played audio + chat log",
+      tech:["Python","Streamlit","Groq Whisper","Groq Llama 3.3 70B","Deepgram Aura-2","Open-Meteo API"],
+      features:["Full voice-in / voice-out loop","Multi-tool calling (time + weather, extensible)","Real Whisper transcription, not guessed captions","Natural Deepgram TTS replies","Multi-turn session memory","Chat-bubble transcript alongside audio"],
+      github:"https://github.com/HaseebaYasin55/Voice-Bot",
+      demo:"https://voice-bot-11.streamlit.app/",
+      featured:true
+    },
+    {
+      id:"vapi-rag", name:"RAG Voice Assistant (Vapi)", cat:"voice",
+      tagline:"Voice-first RAG system with a FastAPI + Supabase backend",
+      problem:"Reading long documents is slow, and most voice assistants can't ground their spoken answers in a specific set of private documents.",
+      solution:"A voice-first RAG system: Vapi handles the live call and speech, a FastAPI backend retrieves the most relevant chunks from a Supabase pgvector store, and Groq generates an answer strictly from that context, which Vapi speaks back — via an OpenAI-compatible /chat/completions endpoint Vapi plugs straight into.",
+      arch:"You (voice) → Vapi (STT)\n  → FastAPI backend\n  → Retrieval (Supabase pgvector\n     + HF embeddings)\n  → Groq LLM (grounded answer)\n  → Vapi (TTS)\n  → You (voice)",
+      tech:["Python","FastAPI","Vapi","Supabase (Postgres + pgvector)","Groq","HuggingFace Inference","LangChain","Streamlit","Vercel"],
+      features:["Document ingestion (PDF/TXT/DOCX) into a vector DB","Real-time voice conversation with live transcript","OpenAI-compatible /chat/completions endpoint for Vapi","Grounded, honest-when-unsure answers","Serverless FastAPI backend on Vercel","Query history logging"],
+      github:"https://github.com/HaseebaYasin55/RAG-Voice-Assistant-using-Vapi",
+      demo:"https://rag-voice-assistant-using-vapi-11.streamlit.app/",
+      featured:true
+    },
+    {
+      id:"transcription-bot", name:"Transcription Bot", cat:"agents",
+      tagline:"Multi-tool agent that finds, transcribes and summarizes video",
+      problem:"Researching a topic on YouTube means manually searching, watching, and note-taking — no single flow finds a video, extracts what was actually said, and files it away.",
+      solution:"A multi-tool AI agent that takes a topic or a YouTube URL, calls a video_search tool (SerpApi) to find a matching video, calls a transcribe tool to pull the real captions, summarizes them, and saves the transcript into a persistent, browsable local knowledge base.",
+      arch:"Topic/URL → Groq agent loop\n  (gpt-oss-20b, tool-calling)\n     │\n  tool: video_search (SerpApi)\n     │\n  tool: transcribe (SerpApi)\n     │\n  save → knowledge_base/*.txt\n     │\n  LLM writes summary → UI\n\ncapped at 5 reasoning turns",
+      tech:["Python","Streamlit","Groq (tool-calling)","SerpApi (YouTube search + transcript)"],
+      features:["Multi-tool calling in a single flow","Real transcript extraction, not guessed captions","Automatic AI-generated summary","Persistent local knowledge base with a sidebar browser","Retry-safe tool calls","Reasoning-turn safety cap"],
+      github:"https://github.com/HaseebaYasin55/Transcription-Bot",
+      demo:"https://transcriptionbot.streamlit.app/",
+      featured:false
+    },
+    {
+      id:"ai-news-agent", name:"AI News Research Agent", cat:"agents",
+      tagline:"Three-agent CrewAI pipeline that researches, summarizes & publishes news",
+      problem:"Keeping a team updated on fast-moving news topics usually means someone manually searches, reads, summarizes, and posts updates every day.",
+      solution:"A three-agent CrewAI pipeline — Researcher, Summarizer, Publisher — that fetches trending headlines, condenses and de-dupes them with Gemini, then posts the digest to a private Slack channel and logs every item to a Google Sheet, either on a schedule or on demand for a single topic.",
+      arch:"Researcher\n (NewsFetcherTool → Serper News API)\n     │\nSummarizer\n (SummarizerTool → Gemini API)\n     │\nPublisher\n (SlackBotTool + SheetsLoggerTool)\n\ntwo entry points: cron (6h) · on-demand",
+      tech:["Python","CrewAI","Google Gemini","Serper News API","Slack Webhooks","Google Sheets API"],
+      features:["Three sequential, specialized agents","Rate-limited LLM calls (free-tier safe)","Scheduled + on-demand entry points","Automatic Slack posting","Automatic Google Sheets logging","Config-driven agent roles/tasks (YAML)"],
+      github:"https://github.com/HaseebaYasin55/AI-News-Reasearch-Agent",
+      demo:"",
+      featured:true
+    },
+    {
+      id:"todo-mcp", name:"ToDo List MCP Server", cat:"mcp",
+      tagline:"An MCP server exposing 5 tools to Claude Desktop",
+      problem:"AI clients like Claude Desktop can't act on a user's local files or tasks unless they're given a standardized way to expose tools — hand-rolled integrations don't compose.",
+      solution:"A Model Context Protocol server built with the official MCP Python SDK's FastMCP interface, exposing five tools (add, list, get, complete, delete) that let any MCP-compatible client manage a local JSON-backed to-do list — installable straight into Claude Desktop.",
+      arch:"MCP Client (Claude Desktop)\n   │  stdio / JSON-RPC\n   ▼\nserver.py (FastMCP tools)\n   │\n   ▼\nstorage.py (read/write JSON)\n   │\n   ▼\ntodos.json (local data file)",
+      tech:["Python","official MCP Python SDK","FastMCP","JSON storage"],
+      features:["5 typed MCP tools: add / list / get / complete / delete","Zero external database — plain local JSON","One-command install into Claude Desktop","Testable via the MCP Inspector dev UI","Clean client/server separation"],
+      github:"https://github.com/HaseebaYasin55/ToDo-List-MCP-Server",
+      demo:"",
+      featured:true
+    },
+    {
+      id:"supabase-crud", name:"DocHub — Supabase CRUD App", cat:"fullstack",
+      tagline:"Full-stack document manager with a shared UI + CLI backend",
+      problem:"Most CRUD tutorials only cover a database — real apps also need file storage and server-side validation, and behavior often diverges between a UI and a CLI built on the same backend.",
+      solution:"A document-management app where a Streamlit UI and a terminal CLI both call the exact same document_service.py functions, so upload/list/edit/replace/delete behavior never diverges — backed by Supabase Postgres for metadata, Supabase Storage for files, and a Deno/TypeScript Edge Function that validates file type/size server-side.",
+      arch:"User → Streamlit UI / CLI\n   │\ndocument_service.py\n (single source of truth)\n   │\n   ├─► Supabase Storage (files)\n   ├─► Supabase Postgres (metadata)\n   └─► Edge Fn: validate-document",
+      tech:["Python","Streamlit","supabase-py","Supabase Postgres","Supabase Storage","Supabase Edge Functions (Deno/TS)"],
+      features:["Shared business-logic layer for UI + CLI","Drag-and-drop upload with server-side validation","Edit metadata without touching the file","Replace file while keeping the same record","Confirmation-gated delete, cleans up storage + DB"],
+      github:"https://github.com/HaseebaYasin55/Supabase-CRUD-App",
+      demo:"https://docapp-11.streamlit.app/",
+      featured:false
+    },
+    {
+      id:"chainlit-app", name:"imagineAI — Chainlit App", cat:"llm",
+      tagline:"Chatbot that talks with Gemini and paints with FLUX.1-schnell",
+      problem:"Most chatbot demos only talk — they can't also create — and off-the-shelf chat UIs come with default branding that doesn't fit a personal project.",
+      solution:"A Chainlit chatbot that talks with Google Gemini and paints with FLUX.1-schnell — messages like \"generate an image of...\" are automatically routed to image generation instead of text — wrapped in a fully custom-branded UI with the default Chainlit chrome stripped out.",
+      arch:"Message → intent routing\n   ├─► Gemini (streamed text)\n   └─► FLUX.1-schnell via HF\n        Inference (image)\n   → rendered inline +\n     download button\n   → SQLite chat history",
+      tech:["Python","Chainlit","Google Gemini API","Hugging Face Inference (FLUX.1-schnell)","SQLite","SQLAlchemy"],
+      features:["Automatic text-vs-image intent routing","Streamed multi-turn Gemini conversations","One-click image download button","Fully custom UI theming, no default branding","Persistent, resumable chat history"],
+      github:"https://github.com/HaseebaYasin55/Chainlit-App",
+      demo:"",
+      featured:false
+    },
+    {
+      id:"comparing-llms", name:"Comparing LLMs", cat:"llm",
+      tagline:"Structured evaluation of LLMs on research-paper summarization",
+      problem:"Choosing an LLM for a task like paper summarization is often a gut call — there's rarely side-by-side evidence of which model is actually more accurate or more prone to making things up.",
+      solution:"A structured evaluation comparing Gemini, Claude, and two Groq-hosted open models (GPT-OSS-120B, Llama 3.3 70B) on the same paper-summarization prompt, scored across summary quality, accuracy, conciseness and hallucinations to produce an overall rating per model.",
+      arch:"Fixed prompt (150-word summary,\n  only stated facts)\n   │\nsame source chapters → each model\n   │\nscored on 4 metrics per model\n   │\ncomparison table + overall rating",
+      tech:["Google Gemini","Anthropic Claude","Groq (GPT-OSS-120B)","Groq (Llama 3.3 70B)","Prompt design & manual evaluation"],
+      features:["Identical controlled prompt across all models","4-metric scoring rubric","Explicit hallucination tracking per model","Clear overall-rating ranking"],
+      github:"https://github.com/HaseebaYasin55/ComparingLLMs",
+      demo:"",
+      featured:false
+    },
+    {
+      id:"private-n8n", name:"Private Automation Project", cat:"private",
+      tagline:"Confidential production workflow automation built in n8n",
+      problem:"— details confidential —",
+      solution:"A private, production n8n workflow automation project connecting multiple tools and services into automated pipelines. It isn't public, so specifics are intentionally left out here — happy to walk through the design directly in an interview or call.",
+      arch:"🔒 architecture available on request",
+      tech:["n8n","Workflow Automation"],
+      features:["Private / confidential — not publicly documented"],
+      github:"",
+      demo:"",
+      featured:false,
+      isPrivate:true
+    }
+  ],
+
+  skills:[
+    { cat:"Languages & Data", items:["Python","JavaScript","HTML/CSS","SQL"] },
+    { cat:"LLMs & Providers", items:["Groq","Google Gemini","Anthropic Claude","Hugging Face Inference","OpenAI-compatible APIs"] },
+    { cat:"Agents & Orchestration", items:["CrewAI","Tool / Function Calling","Model Context Protocol (MCP)","LangChain"] },
+    { cat:"RAG & Vector Search", items:["ChromaDB","Supabase pgvector","sentence-transformers","Semantic Search"] },
+    { cat:"Voice AI", items:["Vapi","Deepgram (Aura-2 TTS)","Groq Whisper (ASR)"] },
+    { cat:"Memory Systems", items:["Mem0"] },
+    { cat:"App & Backend", items:["Streamlit","Chainlit","FastAPI","Supabase (Postgres/Storage/Edge Fns)","SQLite","SQLAlchemy"] },
+    { cat:"Automation & Integration", items:["n8n","Slack API","Google Sheets API","SerpApi"] },
+    { cat:"Tooling & Deploy", items:["Git / GitHub","Vercel","Streamlit Community Cloud"] }
+  ],
+
+  experience:[
+    {
+      current:true, date:"Jul 2026 — Present", role:"AI Engineering Intern", org:"Spiral Lab", loc:"Lahore, Pakistan",
+      bullets:[
+        "Build generative AI and agentic applications in Python — spanning LLMs, RAG, embeddings, vector databases, semantic search and tool calling",
+        "Develop AI-powered knowledge assistants and real-time voice agents using LangChain, LangGraph, CrewAI, Vapi, Streamlit, Chainlit and FastAPI",
+        "Integrate LLM APIs, external services and cloud AI platforms while exploring agent orchestration, deployment and monitoring"
+      ],
+      tech:["LangChain","LangGraph","CrewAI","Vapi","FastAPI","Streamlit","Chainlit"]
+    },
+    {
+      date:"May 2025 — Nov 2025", role:"Frontend Developer Intern", org:"Technofyx", loc:"Remote",
+      bullets:[
+        "Developed and maintained responsive user interfaces using HTML, CSS and JavaScript",
+        "Collaborated with the team to design user-friendly web interfaces across devices and screen sizes",
+        "Optimized UI performance and improved application responsiveness through code enhancements and debugging"
+      ],
+      tech:["HTML","CSS","JavaScript"]
+    },
+    {
+      date:"Jul 2024 — Sep 2024", role:"Software Engineering Fellow", org:"Headstarter AI", loc:"New York, United States",
+      bullets:[
+        "Completed a 7-week fellowship shipping real-world software projects with a small team",
+        "Built a Pantry Tracker app and an AI Customer Service application from concept to working demo",
+        "Collaborated with group members across the full build — design, development and iteration"
+      ],
+      tech:[]
+    },
+    {
+      date:"May 2022 — May 2023", role:"Co-director, Cloud Development Team", org:"ACM UET Lahore", loc:"Lahore, Pakistan",
+      bullets:[
+        "Co-directed the Cloud Development Team within UET Lahore's ACM student chapter",
+        "Helped plan and lead cloud-focused learning activities for fellow students"
+      ],
+      tech:[]
+    }
+  ],
+
+  education:[
+    {
+      date:"Nov 2021 — Jan 2025", degree:"BSc, Computer Engineering", org:"University of Engineering and Technology, Lahore",
+      note:"Bachelor's degree in Computer Engineering."
+    },
+    {
+      date:"Jun 2019 — Jul 2021", degree:"FSc, ICS (Pre-Engineering)", org:"Army Public School & College",
+      note:"Intermediate in Computer Science, laying the math and CS groundwork for engineering study."
+    }
+  ]
+};
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
+
+function catLabel(key){ return (DATA.categories.find(c=>c.key===key)||{}).label || key; }
+
+// ---- Featured projects ----
+function renderFeatured(){
+  const list = DATA.projects;
+  const el = $('#featuredList');
+  el.innerHTML = list.map((p,i)=>`
+    <div class="feat-card reveal" data-id="${p.id}">
+      <div class="feat-head" data-toggle="${p.id}">
+        <div class="feat-head-left">
+          <span class="feat-num mono">0${i+1}</span>
+          <div>
+            <div class="feat-title">${p.name}${p.isPrivate?' <span class="proj-private-badge" style="margin-left:6px;">🔒 private</span>':''}</div>
+            <div class="feat-tagline">${p.tagline}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="feat-cat-badge">${catLabel(p.cat)}</span>
+          <span class="feat-toggle">+</span>
+        </div>
+      </div>
+      <div class="feat-body">
+        <div class="feat-body-inner">
+          <div class="psa">
+            <div class="block"><div class="label problem">Problem</div><p>${p.problem}</p></div>
+            <div class="block"><div class="label solution">Solution</div><p>${p.solution}</p></div>
+            <div class="block"><div class="label">Architecture</div><div class="arch-box">${p.arch}</div></div>
+          </div>
+          <div>
+            <div class="block"><div class="label">Key Features</div><ul class="feat-list">${p.features.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+            <div class="block"><div class="label">Technologies</div><div class="tech-row">${p.tech.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>
+            <div class="feat-links">
+              ${p.github?`<a href="${p.github}" target="_blank" rel="noopener">⌘ Code</a>`:''}
+              ${p.demo?`<a href="${p.demo}" target="_blank" rel="noopener">↗ Live Demo</a>`:''}
+              ${p.isPrivate?`<span class="tag">🔒 not public</span>`:''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  $$('.feat-head').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const card = h.closest('.feat-card');
+      const body = card.querySelector('.feat-body');
+      const isOpen = card.classList.contains('open');
+      // close others
+      $$('.feat-card').forEach(c=>{ c.classList.remove('open'); c.querySelector('.feat-body').style.maxHeight=null; });
+      if(!isOpen){
+        card.classList.add('open');
+        body.style.maxHeight = body.scrollHeight+40+'px';
+      }
+    });
+  });
+}
+
+// ---- Skills ----
+function renderSkills(){
+  const el = $('#skillsGrid');
+  el.innerHTML = DATA.skills.map(s=>`
+    <div class="skill-cat">
+      <h4>▸ ${s.cat}</h4>
+      <div class="skill-tags">${s.items.map(i=>`<span class="skill-tag" data-skill="${i}">${i}</span>`).join('')}</div>
+    </div>
+  `).join('');
+  $$('.skill-tag').forEach(t=>{
+    t.addEventListener('click',()=>{
+      const skill = t.dataset.skill;
+      const related = DATA.projects.filter(p=>p.tech.some(x=>x.toLowerCase().includes(skill.toLowerCase()) || skill.toLowerCase().includes(x.toLowerCase())));
+      const info = $('#skillInfo');
+      if(related.length){
+        info.innerHTML = `<b>${skill}</b> used in: ${related.map(r=>`<span class="proj-pill">${r.name}</span>`).join(' ')}`;
+      } else {
+        info.innerHTML = `<b>${skill}</b> — core skill, applied across the stack.`;
+      }
+    });
+  });
+}
+
+// ---- Timelines ----
+function renderTimeline(targetSel, data){
+  $(targetSel).innerHTML = data.map((d,i)=>`
+    <div class="tl-item ${d.current?'current':''}" data-tl="${i}">
+      <div class="tl-card">
+        <div class="tl-head" data-tl-toggle="${i}">
+          <div>
+            <div class="tl-date">${d.current?'<span class="tl-live"><span class="pulse"></span> current</span>':''}${d.date}</div>
+            <div class="tl-role">${d.role}</div>
+            <div class="tl-org">${d.org}</div>
+            ${d.loc?`<div class="tl-loc">${d.loc}</div>`:''}
+          </div>
+          <div class="tl-toggle">+</div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <ul class="feat-list">
+              ${(d.bullets||[]).map(b=>`<li>${b}</li>`).join('')}
+            </ul>
+            ${(d.tech&&d.tech.length)?`<div class="tech-row">${d.tech.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  $$('[data-tl-toggle]',$(targetSel)).forEach(head=>{
+    head.addEventListener('click',()=>{
+      const item = head.closest('.tl-item');
+      item.classList.toggle('open');
+      const body = item.querySelector('.tl-body');
+      body.style.maxHeight = item.classList.contains('open') ? body.scrollHeight+'px' : null;
+      head.querySelector('.tl-toggle').textContent = item.classList.contains('open') ? '×' : '+';
+    });
+  });
+}
+
+function renderEducation(targetSel, data){
+  const capIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>`;
+  $(targetSel).innerHTML = data.map(d=>`
+    <div class="edu-card">
+      <div class="edu-top">
+        <div class="edu-icon">${capIcon}</div>
+        <div class="edu-date mono">${d.date}</div>
+      </div>
+      <div class="edu-degree">${d.degree}</div>
+      <div class="edu-org">${d.org}</div>
+      ${d.note?`<div class="edu-note">${d.note}</div>`:''}
+    </div>
+  `).join('');
+}
+
+
+renderFeatured();
+renderSkills();
+renderTimeline('#expTl', DATA.experience);
+renderEducation('#eduTl', DATA.education);
+
+// resume / email buttons
+$('#resumeBtn').addEventListener('click',()=>{
+  if(DATA.profile.resumeUrl){ window.open(DATA.profile.resumeUrl,'_blank'); }
+  else { alert('Add your resume link to DATA.profile.resumeUrl in the code, then this button will open it.'); }
+});
+$('#emailBtn').addEventListener('click',(e)=>{
+  e.preventDefault();
+  if(DATA.profile.email){ window.location.href = 'mailto:'+DATA.profile.email; }
+  else { alert('Add your email to DATA.profile.email in the code to activate this button.'); }
+});
+
+/* ============================================================
+   INTERACTIONS: cursor, nav, scroll reveal, hero canvas, typing
+   ============================================================ */
+
+// custom cursor
+const dot = $('#cursor-dot'), ring = $('#cursor-ring');
+let mx=0,my=0, rx=0, ry=0;
+window.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+});
+function animRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+animRing();
+$$('a, button, .feat-head, .skill-tag, .tag, .tl-head, .edu-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-grow'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-grow'));
+});
+
+// scroll progress
+window.addEventListener('scroll',()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+  $('#progress').style.width = pct+'%';
+  // nav active state
+  const sections = ['hero','about','featured','skills','experience','contact'];
+  let current = sections[0];
+  for(const id of sections){
+    const s = document.getElementById(id);
+    if(s && s.getBoundingClientRect().top < 140) current = id;
+  }
+  $$('.nav-links a').forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+current));
+});
+
+// mobile menu
+$('#burgerBtn').addEventListener('click',()=>$('#mobileMenu').classList.toggle('open'));
+$$('#mobileMenu a').forEach(a=>a.addEventListener('click',()=>$('#mobileMenu').classList.remove('open')));
+
+// scroll reveal
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+},{ threshold:0.12 });
+$$('.reveal').forEach(el=>io.observe(el));
+// re-observe dynamically injected feature cards
+document.querySelectorAll('#featuredList .feat-card, .skill-cat, .tl-item, .edu-card').forEach(el=>{ el.classList.add('reveal'); io.observe(el); });
+
+// hero terminal typing effect
+const typedLines = [
+"class AIEngineer:",
+"    def __init__(self):",
+"        self.name = \"Haseeba Yasin\"",
+"        self.builds = [",
+"            \"LLM apps\", \"RAG pipelines\",",
+"            \"voice agents\", \"multi-agent",
+"             systems\", \"MCP servers\"",
+"        ]",
+"        self.status = \"shipping\"",
+""
+];
+let li=0, ci=0;
+const typedEl = $('#typedOut');
+function typeStep(){
+  if(li>=typedLines.length){
+    typedEl.innerHTML += '<span class="caret">&nbsp;</span>';
+    return;
+  }
+  const line = typedLines[li];
+  if(ci<=line.length){
+    const done = typedLines.slice(0,li).join('\n');
+    typedEl.textContent = (done? done+'\n':'') + line.slice(0,ci);
+    ci++;
+    setTimeout(typeStep, 14+Math.random()*22);
+  } else {
+    li++; ci=0;
+    setTimeout(typeStep, 90);
+  }
+}
+setTimeout(typeStep, 500);
+
+// hero network canvas
+const canvas = $('#hero-canvas');
+const ctx = canvas.getContext('2d');
+let W,H,nodes=[];
+function resizeCanvas(){
+  W = canvas.width = canvas.offsetWidth;
+  H = canvas.height = canvas.offsetHeight;
+}
+function initNodes(){
+  const count = window.innerWidth<700 ? 26 : 55;
+  nodes = Array.from({length:count},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35, r:Math.random()*1.6+0.6
+  }));
+}
+let mouseX=-9999, mouseY=-9999;
+canvas.addEventListener('mousemove',e=>{ const r=canvas.getBoundingClientRect(); mouseX=e.clientX-r.left; mouseY=e.clientY-r.top; });
+canvas.addEventListener('mouseleave',()=>{ mouseX=-9999; mouseY=-9999; });
+function drawNet(){
+  ctx.clearRect(0,0,W,H);
+  for(const n of nodes){
+    n.x+=n.vx; n.y+=n.vy;
+    if(n.x<0||n.x>W) n.vx*=-1;
+    if(n.y<0||n.y>H) n.vy*=-1;
+    const dxm = n.x-mouseX, dym = n.y-mouseY;
+    const dm = Math.sqrt(dxm*dxm+dym*dym);
+    if(dm<120){ n.x += dxm/dm*0.6; n.y += dym/dm*0.6; }
+  }
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i], b=nodes[j];
+      const dx=a.x-b.x, dy=a.y-b.y; const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){
+        ctx.strokeStyle = `rgba(127,232,200,${0.16*(1-d/130)})`;
+        ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+    }
+  }
+  for(const n of nodes){
+    ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,138,92,0.85)';
+    ctx.fill();
+  }
+  requestAnimationFrame(drawNet);
+}
+resizeCanvas(); initNodes(); drawNet();
+window.addEventListener('resize',()=>{ resizeCanvas(); initNodes(); });
+
+/* ============================================================
+   MINI TERMINAL EASTER EGG
+   ============================================================ */
+const mtBtn = $('#miniTermBtn'), mt = $('#miniTerm'), mtBody = $('#mtBody'), mtInput = $('#mtInput');
+mtBtn.addEventListener('click',()=>{ mt.classList.toggle('open'); if(mt.classList.contains('open')) mtInput.focus(); });
+
+const mtCommands = {
+  help:()=>"available commands:\n  about      – who is haseeba\n  projects   – list all projects\n  skills     – core skill areas\n  contact    – how to reach me\n  clear      – clear this terminal",
+  about:()=>"Haseeba Yasin — AI Engineer.\nBuilds LLM apps, RAG systems, voice agents,\nmulti-agent pipelines & MCP servers.",
+  projects:()=>DATA.projects.map(p=>`• ${p.name} — ${catLabel(p.cat)}`).join('\n'),
+  skills:()=>DATA.skills.map(s=>s.cat).join('\n'),
+  contact:()=>`GitHub:   ${DATA.profile.github}\nLinkedIn: ${DATA.profile.linkedin}`,
+  whoami:()=>"haseeba-yasin (ai-engineer)",
+  sudo:()=>"nice try 😄 — no root access in the lab.",
+};
+function mtPrint(cmd, resp){
+  const l1 = document.createElement('div'); l1.className='line'; l1.innerHTML = `<span class="cmd">❯ ${cmd}</span>`;
+  const l2 = document.createElement('div'); l2.className='line resp'; l2.textContent = resp;
+  mtBody.appendChild(l1); mtBody.appendChild(l2);
+  mtBody.scrollTop = mtBody.scrollHeight;
+}
+mtInput.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const v = mtInput.value.trim();
+    if(!v) return;
+    if(v.toLowerCase()==='clear'){ mtBody.innerHTML=''; mtInput.value=''; return; }
+    const fn = mtCommands[v.toLowerCase()];
+    mtPrint(v, fn ? fn() : `command not found: ${v}\ntype "help" for options`);
+    mtInput.value='';
+  }
+});
+</script>
+</body>
+</html>
